@@ -1,0 +1,142 @@
+{
+  "source": "https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/750,5950,6287,6106,6306,5951,6288,5862,6137,5960,33032,6267,5961,5962,6322,6274,6140,6057,6305,145742,25076,5460671/property/MolecularFormula,IUPACName,IsomericSMILES/JSON",
+  "checked": "2026-10-10",
+  "data": {
+    "PropertyTable": {
+      "Properties": [
+        {
+          "CID": 750,
+          "MolecularFormula": "C2H5NO2",
+          "SMILES": "C(C(=O)O)N",
+          "IUPACName": "2-aminoacetic acid"
+        },
+        {
+          "CID": 5950,
+          "MolecularFormula": "C3H7NO2",
+          "SMILES": "C[C@@H](C(=O)O)N",
+          "IUPACName": "(2S)-2-aminopropanoic acid"
+        },
+        {
+          "CID": 6287,
+          "MolecularFormula": "C5H11NO2",
+          "SMILES": "CC(C)[C@@H](C(=O)O)N",
+          "IUPACName": "(2S)-2-amino-3-methylbutanoic acid"
+        },
+        {
+          "CID": 6106,
+          "MolecularFormula": "C6H13NO2",
+          "SMILES": "CC(C)C[C@@H](C(=O)O)N",
+          "IUPACName": "(2S)-2-amino-4-methylpentanoic acid"
+        },
+        {
+          "CID": 6306,
+          "MolecularFormula": "C6H13NO2",
+          "SMILES": "CC[C@H](C)[C@@H](C(=O)O)N",
+          "IUPACName": "(2S,3S)-2-amino-3-methylpentanoic acid"
+        },
+        {
+          "CID": 5951,
+          "MolecularFormula": "C3H7NO3",
+          "SMILES": "C([C@@H](C(=O)O)N)O",
+          "IUPACName": "(2S)-2-amino-3-hydroxypropanoic acid"
+        },
+        {
+          "CID": 6288,
+          "MolecularFormula": "C4H9NO3",
+          "SMILES": "C[C@H]([C@@H](C(=O)O)N)O",
+          "IUPACName": "(2S,3R)-2-amino-3-hydroxybutanoic acid"
+        },
+        {
+          "CID": 5862,
+          "MolecularFormula": "C3H7NO2S",
+          "SMILES": "C([C@@H](C(=O)O)N)S",
+          "IUPACName": "(2R)-2-amino-3-sulfanylpropanoic acid"
+        },
+        {
+          "CID": 6137,
+          "MolecularFormula": "C5H11NO2S",
+          "SMILES": "CSCC[C@@H](C(=O)O)N",
+          "IUPACName": "(2S)-2-amino-4-methylsulfanylbutanoic acid"
+        },
+        {
+          "CID": 5960,
+          "MolecularFormula": "C4H7NO4",
+          "SMILES": "C([C@@H](C(=O)O)N)C(=O)O",
+          "IUPACName": "(2S)-2-aminobutanedioic acid"
+        },
+        {
+          "CID": 33032,
+          "MolecularFormula": "C5H9NO4",
+          "SMILES": "C(CC(=O)O)[C@@H](C(=O)O)N",
+          "IUPACName": "(2S)-2-aminopentanedioic acid"
+        },
+        {
+          "CID": 6267,
+          "MolecularFormula": "C4H8N2O3",
+          "SMILES": "C([C@@H](C(=O)O)N)C(=O)N",
+          "IUPACName": "(2S)-2,4-diamino-4-oxobutanoic acid"
+        },
+        {
+          "CID": 5961,
+          "MolecularFormula": "C5H10N2O3",
+          "SMILES": "C(CC(=O)N)[C@@H](C(=O)O)N",
+          "IUPACName": "(2S)-2,5-diamino-5-oxopentanoic acid"
+        },
+        {
+          "CID": 5962,
+          "MolecularFormula": "C6H14N2O2",
+          "SMILES": "C(CCN)C[C@@H](C(=O)O)N",
+          "IUPACName": "(2S)-2,6-diaminohexanoic acid"
+        },
+        {
+          "CID": 6322,
+          "MolecularFormula": "C6H14N4O2",
+          "SMILES": "C(C[C@@H](C(=O)O)N)CN=C(N)N",
+          "IUPACName": "(2S)-2-amino-5-(diaminomethylideneamino)pentanoic acid"
+        },
+        {
+          "CID": 6274,
+          "MolecularFormula": "C6H9N3O2",
+          "SMILES": "C1=C(NC=N1)C[C@@H](C(=O)O)N",
+          "IUPACName": "(2S)-2-amino-3-(1H-imidazol-5-yl)propanoic acid"
+        },
+        {
+          "CID": 6140,
+          "MolecularFormula": "C9H11NO2",
+          "SMILES": "C1=CC=C(C=C1)C[C@@H](C(=O)O)N",
+          "IUPACName": "(2S)-2-amino-3-phenylpropanoic acid"
+        },
+        {
+          "CID": 6057,
+          "MolecularFormula": "C9H11NO3",
+          "SMILES": "C1=CC(=CC=C1C[C@@H](C(=O)O)N)O",
+          "IUPACName": "(2S)-2-amino-3-(4-hydroxyphenyl)propanoic acid"
+        },
+        {
+          "CID": 6305,
+          "MolecularFormula": "C11H12N2O2",
+          "SMILES": "C1=CC=C2C(=C1)C(=CN2)C[C@@H](C(=O)O)N",
+          "IUPACName": "(2S)-2-amino-3-(1H-indol-3-yl)propanoic acid"
+        },
+        {
+          "CID": 145742,
+          "MolecularFormula": "C5H9NO2",
+          "SMILES": "C1C[C@H](NC1)C(=O)O",
+          "IUPACName": "(2S)-pyrrolidine-2-carboxylic acid"
+        },
+        {
+          "CID": 25076,
+          "MolecularFormula": "C3H7NO2Se",
+          "SMILES": "C([C@@H](C(=O)O)N)[SeH]",
+          "IUPACName": "(2R)-2-amino-3-selanylpropanoic acid"
+        },
+        {
+          "CID": 5460671,
+          "MolecularFormula": "C12H21N3O3",
+          "SMILES": "C[C@@H]1CC=N[C@H]1C(=O)NCCCC[C@@H](C(=O)O)N",
+          "IUPACName": "(2S)-2-amino-6-[[(2R,3R)-3-methyl-3,4-dihydro-2H-pyrrole-2-carbonyl]amino]hexanoic acid"
+        }
+      ]
+    }
+  }
+}

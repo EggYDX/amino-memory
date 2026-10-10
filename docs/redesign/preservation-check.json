@@ -1,0 +1,10 @@
+{
+  "files": 51,
+  "changed": [],
+  "indexedDB": {
+    "name": "amino-memory",
+    "version": 1,
+    "store": "state",
+    "key": "main"
+  }
+}
