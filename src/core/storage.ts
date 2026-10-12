@@ -2,6 +2,7 @@ import { openDB } from 'idb';
 import { BY_ID } from '../data/amino';
 import { checkAnswer, modeFor, pause, skillKey, validateConfig } from './engine';
 import { FIELDS, freshData, type AppData, type Config, type Field, type Memory, type Question, type Result, type Session, type StoredCard } from './types';
+import { validSkillKey } from './learning';
 
 const database = () => openDB('amino-memory',1,{upgrade(db){db.createObjectStore('state');}});
 export async function loadData(): Promise<AppData> {
@@ -32,10 +33,11 @@ const field=(x:unknown):Field=>FIELDS.includes(x as Field)?x as Field:bad();
 const fields=(x:unknown)=>unique(array(x,4).map(field));
 const choice=(x:unknown):2|4=>x===2||x===4?x:bad();
 const nameMode=(x:unknown):'input'|'choice'=>x==='input'||x==='choice'?x:bad();
+const skillKeys=(x:unknown)=>unique(array(x,10000).map(k=>{const key=textValue(k,100);return validSkillKey(key)?key:bad('记忆方向无效');}));
 function config(x:unknown):Config {
   const o=object(x); const c:Config={title:textValue(o.title,100),known:fields(o.known),targets:fields(o.targets),
     scope:textValue(o.scope) as Config['scope'], selected:ids(o.selected),count:integer(o.count,1),
-    strategy:textValue(o.strategy) as Config['strategy'],nameMode:nameMode(o.nameMode),choices:choice(o.choices),mixed:bool(o.mixed)};
+    strategy:textValue(o.strategy) as Config['strategy'],nameMode:nameMode(o.nameMode),choices:choice(o.choices),mixed:bool(o.mixed),...(o.focusKeys===undefined?{}:{focusKeys:skillKeys(o.focusKeys)})};
   if(!['all','standard','selected','favorites','errors','weak','due'].includes(c.scope)||!['adaptive','balanced','weak'].includes(c.strategy)||validateConfig(c))return bad('训练配置无效');
   return c;
 }
@@ -56,7 +58,11 @@ function result(x:unknown):Result {
     if(!q.targets.includes(f)||mode!==modeFor(q,f)||t.key!==skillKey(q,f))return bad('答题记录与题目不一致');
     if((status==='skip'||status==='reveal')&&correct)return bad('答题结果无效');
     if(correct && !checkAnswer(q,f,answer,false))return bad('答题结果无效');
-    return {field:f,answer,mode,correct,key:skillKey(q,f),scheduled:bool(t.scheduled)};
+    const recall=t.recall===undefined?undefined:textValue(t.recall) as 'guess'|'hard'|'good'|'easy';
+    const reviewKind=t.reviewKind===undefined?undefined:textValue(t.reviewKind) as 'new'|'review'|'relearn';
+    if(recall&&(!['guess','hard','good','easy'].includes(recall)||!correct||recall==='guess'&&mode!=='choice'))return bad('回忆评价无效');
+    if(reviewKind&&(!['new','review','relearn'].includes(reviewKind)||!t.scheduled))return bad('复习记录无效');
+    return {field:f,answer,mode,correct,key:skillKey(q,f),scheduled:bool(t.scheduled),...(recall?{recall}:{}),...(reviewKind?{reviewKind}:{})};
   });
   unique(answers.map(a=>a.field));
   if(answers.length!==q.targets.length||(status==='correct'&&!answers.every(a=>a.correct))||(status==='wrong'&&answers.every(a=>a.correct)))return bad('答题结果无效');
@@ -70,16 +76,20 @@ function session(x:unknown,active=false):Session {
   const q=o.question===null?null:question(o.question);if(active&&(!q||!pool.includes(q.amino)))return bad('未完成训练格式无效');
   const draft:Session['draft']={};for(const [k,v] of Object.entries(object(o.draft))) {const f=field(k);if(q&&!q.targets.includes(f))return bad();draft[f]=textValue(v);}
   return {id:textValue(o.id,100),config:c,pool,started:date(o.started),...(o.ended?{ended:date(o.ended)}:{}),results,question:q,draft,
-    questionStarted:num(o.questionStarted),paused:bool(o.paused),...(o.pausedAt!==undefined?{pausedAt:num(o.pausedAt)}:{}),pauseMs:num(o.pauseMs)};
+    questionStarted:num(o.questionStarted),paused:bool(o.paused),...(o.pausedAt!==undefined?{pausedAt:num(o.pausedAt)}:{}),pauseMs:num(o.pauseMs),...(o.reviewKeys===undefined?{}:{reviewKeys:skillKeys(o.reviewKeys)})};
+}
+function storedCard(value:unknown):StoredCard {
+  const c=object(value);return {due:date(c.due),stability:num(c.stability),difficulty:num(c.difficulty,0,10),elapsed_days:num(c.elapsed_days),scheduled_days:num(c.scheduled_days),reps:integer(c.reps),lapses:integer(c.lapses),state:integer(c.state,0,3),learning_steps:integer(c.learning_steps),...(c.last_review?{last_review:date(c.last_review)}:{})} as StoredCard;
 }
 function memory(x:unknown):Memory {
   const o=object(x);const c=object(o.card);const known=fields(o.known);const target=field(o.target);const mode=nameMode(o.mode);
   const choices=o.choices===undefined?undefined:choice(o.choices);
   const m:Memory={key:textValue(o.key),amino:id(o.amino),known,target,mode,...(choices?{choices}:{}),
-    card:{due:date(c.due),stability:num(c.stability),difficulty:num(c.difficulty,0,10),elapsed_days:num(c.elapsed_days),scheduled_days:num(c.scheduled_days),reps:integer(c.reps),lapses:integer(c.lapses),state:integer(c.state,0,3),learning_steps:integer(c.learning_steps),...(c.last_review?{last_review:date(c.last_review)}:{})} as StoredCard,
+    card:storedCard(c),...(o.lastBefore===undefined?{}:{lastBefore:storedCard(o.lastBefore)}),
     reviews:array(o.reviews).map(v=>{const r=object(v);return {at:date(r.at),rating:integer(r.rating,1,4),session:textValue(r.session,100)};})};
   const q:Question={id:'',amino:m.amino,known,targets:[target],nameMode:target==='name'?mode:'input',choices:choices??4,options:{}};
   if(!known.length||known.includes(target)||modeFor(q,target)!==mode||m.key!==skillKey(q,target)||!m.reviews.length||m.card.reps!==m.reviews.length)return bad('复习状态无效');
+  if(m.lastBefore&&(m.lastBefore.reps!==m.card.reps-1||m.lastBefore.last_review&&Date.parse(m.lastBefore.last_review)>Date.parse(m.reviews.at(-1)!.at)))return bad('前次复习状态无效');
   for(let i=1;i<m.reviews.length;i++)if(Date.parse(m.reviews[i].at)<Date.parse(m.reviews[i-1].at))return bad('复习顺序无效');
   return m;
 }
@@ -90,6 +100,7 @@ export function validateImport(value: unknown): AppData {
   const active=o.active===null?null:session(o.active,true);if(active&&sessions.some(s=>s.id===active.id))return bad('训练编号重复');
   unique([...sessions,...(active?[active]:[])].flatMap(s=>s.results.map(r=>r.id)));
   const memories:Record<string,Memory>={};for(const [key,v] of Object.entries(object(o.memories))){const m=memory(v);if(key!==m.key)return bad('复习索引无效');memories[key]=m;}
+  if(active?.config.scope==='due'&&!active.reviewKeys){active.reviewKeys=[...new Set([...Object.values(memories).filter(m=>active.pool.includes(m.amino)&&Date.parse(m.card.due)<=Date.parse(active.started)).map(m=>m.key),...active.results.flatMap(r=>r.answers.map(a=>a.key)),...active.question!.targets.map(f=>skillKey(active.question!,f))])];active.config.count=Math.min(active.config.count,active.reviewKeys.length);}
   const presets=array(o.presets,100).map(x=>{const p=object(x);return {id:textValue(p.id,100),config:config(p.config)};});unique(presets.map(p=>p.id));
   return {version:1,updated:date(o.updated),settings:{theme,retention:num(s.retention,0.7,0.99),caseSensitive:bool(s.caseSensitive),autoNext:bool(s.autoNext)},favorites:ids(o.favorites),difficult:ids(o.difficult),sessions,active,memories,presets};
 }
