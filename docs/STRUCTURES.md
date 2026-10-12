@@ -1,35 +1,25 @@
-# 结构资料与核对说明
+# 结构图与教材约定
 
-2026-10-10，本次开发读取并核对用户提供的5张教材截图，共22种氨基酸。截图裁剪保存在工作目录，未作为正式网页资源，也未放入项目包。`public/structure-manifest.json` 记录每种氨基酸对应的截图编号、裁剪边界及核对状态。
+## 化学表示
 
-## 表示方式
+正式 SVG 位于 `public/structures/`。共同 α-碳位于 `(160,80)`，α-羧基朝上、氨基朝左、氢朝右、侧链朝下，沿用教材 L 型 Fischer 投影；甘氨酸无手性。苏氨酸与异亮氨酸对应 `(2S,3R)` 和 `(2S,3S)`；L-半胱氨酸与 L-硒代半胱氨酸按 CIP 规则 α 位为 R。
 
-SVG由代码重新编写。共有的α-碳在 `(160,80)`，α-羧基朝上、氨基朝左、氢朝右、侧链朝下，沿用教材的L型Fischer投影逻辑；甘氨酸不具手性。苏氨酸与异亮氨酸的侧链手性按教材投影保留，对应 `(2S,3R)` 与 `(2S,3S)`。半胱氨酸与硒代半胱氨酸虽为L型，按CIP规则α位为R。
+图中 α 位统一表示为 `NH₃⁺ / COO⁻`；Asp/Glu 侧链为羧酸根，Lys/Arg 带正电，His 和 Pyl 的环按教材表示为质子化形式。这些图形约定不表示任意 pH 下都具有同样电荷；His 在生理 pH 附近通常并非主要以带正电形式存在。
 
-SVG统一画出α位 `NH₃⁺ / COO⁻`；Asp/Glu侧链为羧酸根，Lys/Arg侧链带正电；His按教材画出质子化咪唑，Pyl画出质子化亚胺环。该表示用于与教材对应，不代表所有分子在任意pH下都保持这一形式。
+Pro 的五元环包含 α 氨基，表示为质子化仲胺 `H₂N⁺`。Pyl 保留四个 CH₂、ε 位酰胺、五元甲基吡咯啉环和环上 `(2R,3R)` 立体关系。Sec 为 `CH₂—SeH`。
 
-PubChem返回的是相应中性化合物的标准结构资料，质子化形式与教材不同。核对时比较原子连接、侧链、环和立体构型；没有把这类电荷差异当作不同氨基酸。
+PubChem 的中性结构用于核对原子连接与立体构型，质子化形式可以与教材不同。资料见 [PubChem 结构数据](pubchem-structures.json)、[L-Selenocysteine](https://pubchem.ncbi.nlm.nih.gov/compound/25076) 和 [L-Pyrrolysine](https://pubchem.ncbi.nlm.nih.gov/compound/5460671)。
 
-脯氨酸是闭合的五元环，α氨基为质子化的仲胺 `H₂N⁺`，环连接纳入统一骨架投影。Pyl保留赖氨酸侧链的**四个CH₂**、ε位酰胺、五元甲基吡咯啉环和环上 `(2R,3R)` 立体关系。Sec明确为 `CH₂—SeH`，不是半胱氨酸的S。
+## 分类与性质
 
-图鉴对照用共同画布420×460，保持化学键比例与骨架位置。答题用紧凑视图在 `public/structures/compact/`：通过浏览器测量实际SVG边界，加12单位留白，仅改变视口，完整保留原子、键、电荷与立体标记；Pyl在手机选择题中使用整行宽度。图片选择题提供单独放大查看。正式SVG不包含氨基酸中文名、三字母或单字母答案，训练时图片替代文本也不显示答案。
+`src/data/amino.ts` 统一维护名称、缩写、教材主分类、辅助结构标签和说明。教材分组为非极性脂肪族6种、极性不带电6种、芳香族3种、酸性2种、碱性3种、特殊编码2种。
 
-## 数据依据
+Met 保留教材的极性不带电归属；硫醚侧链整体偏疏水，其他教材可能据此归为非极性。芳香族是结构分类，Tyr 的酚羟基仍具有一定极性；特殊编码反映遗传编码身份，与侧链极性属于不同维度。化学性质参考 [Essential chemistry for biochemists](https://pmc.ncbi.nlm.nih.gov/articles/PMC5869253/) 与 [Molecular Biology of the Cell](https://www.ncbi.nlm.nih.gov/books/NBK26830/)，教材归组保持课程口径。
 
-从[PubChem PUG REST官方接口](https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/cid/750,5950,6287,6106,6306,5951,6288,5862,6137,5960,33032,6267,5961,5962,6322,6274,6140,6057,6305,145742,25076,5460671/property/MolecularFormula,IUPACName,IsomericSMILES/JSON)获取分子式、IUPAC名称与含立体信息的SMILES。结果保存在 `pubchem-structures.json`。重点依据：[L-Selenocysteine](https://pubchem.ncbi.nlm.nih.gov/compound/25076)、[L-Pyrrolysine](https://pubchem.ncbi.nlm.nih.gov/compound/5460671)。
+五组 pKₐ(R) / pI 为用户提供的课程重点值：Lys 10.53/9.74、His 6.00/7.59、Arg 12.48/10.76、Asp 3.65/2.77、Glu 4.25/3.22。不为其他项目填充未经确认的数值。该五种不是所有可电离侧链或所有具有 pI 的氨基酸的清单，数值还取决于实验条件。
 
-| 截图 | 项目 |
-|---|---|
-| 1.png | Gly、Ala、Pro、Val、Leu、Ile |
-| 2.png | Ser、Thr、Gln、Asn、Met、Cys |
-| 3.png | Phe、Tyr、Trp |
-| 4.png | Asp、Glu、Arg、Lys、His |
-| 5.png | Sec、Pyl |
+## 资源维护
 
-完成了全部SVG的实际浏览器渲染检查，并单独检查Pro、His、Trp、Pyl的环、双键和标注。绘制时纠正了脯氨酸氨基电荷的省略，Pyl标注明确保留立体关系。核对状态表示本次数据与图形检查完成，未声称获得独立教师审阅。
+答题紧凑视图位于 `public/structures/compact/`，仅调整 SVG 视口并保留原子、键、电荷和立体标记。正式结构图不含名称或缩写答案。
 
-## 分类与名称
-
-中文名和缩写按用户指定的22条表；规范别名仅登记“蛋氨酸”和“硒半胱氨酸”。分类沿用截图的教学分组，包括将Met列于“极性不带电”一组；不同教材常将Met归入非极性，请以课程采用的分类为准。分类只用于图鉴筛选，不用于判分。
-
-后续若教师要求另一种质子化形式或分组，修改正式SVG和统一数据表即可，训练引擎不受影响。项目包不含教材截图原图。
+替换正式 SVG 后运行 `node scripts/compact-structures.mjs`，再执行 `pnpm build`；生成脚本需要 Playwright Chromium。名称、ID 或缩写变更会影响记录索引，应避免直接修改。分类标签与图鉴性质不进入答题字段或 FSRS 记忆键。

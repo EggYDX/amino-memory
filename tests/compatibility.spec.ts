@@ -3,7 +3,7 @@ test('small phone, landscape, dark theme and reduced motion',async({page})=>{
   await page.goto('/#settings');await page.getByLabel('界面主题').selectOption('dark');await expect(page.locator('html')).toHaveAttribute('data-theme','dark');
   await page.emulateMedia({reducedMotion:'reduce'});
   for(const viewport of [{width:375,height:667},{width:844,height:390}]){await page.setViewportSize(viewport);for(const route of ['home','atlas','custom','records','settings']){await page.goto('/#'+route);await expect(page.locator('.page')).toBeVisible();await expect.poll(()=>page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:`test-results/screenshots/dark-${viewport.width}-${route}.png`,fullPage:true});}}
-  await page.goto('/#custom');await page.getByRole('button',{name:'开始练习',exact:true}).filter({visible:true}).click();await expect(page.getByRole('heading',{name:'写出对应的答案'})).toBeVisible();await page.screenshot({path:'test-results/screenshots/dark-landscape-training.png',fullPage:true});
+  await page.goto('/#custom');await page.getByRole('button',{name:'开始练习',exact:true}).filter({visible:true}).click();await page.getByRole('dialog',{name:'准备开始'}).getByRole('button',{name:'开始练习',exact:true}).click();await expect(page.getByRole('heading',{name:'写出对应的答案'})).toBeVisible();await page.screenshot({path:'test-results/screenshots/dark-landscape-training.png',fullPage:true});
   await expect(page.locator('.progress>span')).toHaveCSS('transition-duration','1e-05s');
 });
 test('public structure assets retain atom labels, charges and contain no answer labels',async({request})=>{
